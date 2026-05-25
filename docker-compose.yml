@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  ai-devops-assistant:
+    build: .
+    container_name: ai-devops-assistant
+    stdin_open: true
+    tty: true
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+    volumes:
+      # Mount AWS credentials
+      - ~/.aws:/root/.aws:ro
+      # Mount Kubernetes config
+      - ~/.kube:/root/.kube:ro
+      # Mount application code for development
+      - ./ai_devops_assistant.py:/app/ai_devops_assistant.py
+      - ./text_assistant.py:/app/text_assistant.py
+    networks:
+      - ai-devops-net
+
+networks:
+  ai-devops-net:
+    driver: bridge
